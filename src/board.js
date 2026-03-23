@@ -1,0 +1,43 @@
+import { POINTS, neighbours } from './points.js';
+import { PIECES } from './sizes.js';
+
+export function emptyPoints() {
+  return Object.fromEntries(POINTS.map((id) => [id, null]));
+}
+
+export function startingPoints() {
+  const points = emptyPoints();
+  for (const id of POINTS) {
+    const rank = Number(id.slice(1));
+    const file = id.charCodeAt(0) - 97;
+    if (rank <= 2 || (rank === 3 && file <= 1)) {
+      points[id] = 'dark';
+    } else if (rank >= 4 || (rank === 3 && file >= 3)) {
+      points[id] = 'light';
+    }
+  }
+  return points;
+}
+
+export function occupant(points, id) {
+  return points[id] ?? null;
+}
+
+export function occupiedCount(points, colour) {
+  return POINTS.filter((id) => points[id] === colour).length;
+}
+
+export function emptyCount(points) {
+  return POINTS.filter((id) => points[id] === null).length;
+}
+
+export function hasLegalSlide(points, colour) {
+  return POINTS.some(
+    (from) => points[from] === colour && neighbours(from).some((to) => points[to] === null),
+  );
+}
+
+export function isStartingArray(points) {
+  const start = startingPoints();
+  return POINTS.every((id) => points[id] === start[id]) && occupiedCount(points, 'dark') === PIECES;
+}

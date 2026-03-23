@@ -1,0 +1,19 @@
+export const FILES = 5;
+export const RANKS = 5;
+export const PIECES = 12;
+export const STEP = 64;
+export const PAD = 48;
+export const POINT_R = 7;
+export const PIECE_R = 16;
+export const HIT_R = 24;
+export const BOARD_SIZE = PAD * 2 + STEP * (FILES - 1);
+export const PORT = 8029;
+
+export const BOARD_FILL = '#e6d5b8';
+export const LINE_STROKE = '#6e5344';
+export const POINT_FILL = '#f4efe6';
+export const DARK_FILL = '#3d2b1f';
+export const LIGHT_FILL = '#f4efe6';
+export const LIGHT_STROKE = '#3d2b1f';
+export const LABEL_FILL = '#6e5344';
+export const SELECT_STROKE = '#8b1e1e';
