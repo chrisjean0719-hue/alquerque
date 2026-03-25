@@ -2,7 +2,7 @@ import { formatStatus } from './format.js';
 import { createGame, playPoint } from './game.js';
 import { GameError } from './error.js';
 import { renderBoard } from './render.js';
-import { midSlideGame } from './sample.js';
+import { jumpGame, midSlideGame } from './sample.js';
 
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');
@@ -13,6 +13,7 @@ let game = startGame();
 function startGame() {
   const fixture = new URLSearchParams(window.location.search).get('fixture');
   if (fixture === 'mid') return midSlideGame();
+  if (fixture === 'jump') return jumpGame();
   return createGame();
 }
 

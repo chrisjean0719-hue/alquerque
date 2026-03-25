@@ -1,6 +1,6 @@
 # Roadmap
 
-Alquerque is a 5×5 slide game in the browser. Two players start with twelve pieces each, the centre empty, and Dark slides first to an empty neighbour. About 35 hours remain.
+Alquerque is a 5×5 slide game in the browser. Two players start with twelve pieces each, the centre empty, Dark slides first to an empty neighbour, and a jump over an opponent takes that piece. About 35 hours remain.
 
 ## Later work
 
@@ -50,4 +50,4 @@ Move a cursor between points with the arrows and slide with Enter.
 
 Drag a piece to an empty neighbour.
 
-An opening book is the next piece. The game can slide to a neighbour, and it does not yet suggest an opening reply.
+An opening book is the next piece. The game can slide to a neighbour and take by a jump, and it does not yet suggest an opening reply.

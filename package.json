@@ -1,8 +1,8 @@
 {
   "name": "alquerque",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Slide a piece to an empty neighbour at alquerque",
+  "description": "Slide a piece or take by a jump at alquerque",
   "type": "module",
   "scripts": {
     "start": "node bin/serve.js",

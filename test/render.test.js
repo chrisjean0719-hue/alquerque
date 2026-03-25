@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createGame, playPoint } from '../src/game.js';
 import { renderBoard } from '../src/render.js';
-import { midSlideGame } from '../src/sample.js';
+import { jumpGame, midSlideGame } from '../src/sample.js';
 
 test('the starting board draws 25 points', () => {
   const svg = renderBoard(createGame());
@@ -20,4 +20,9 @@ test('the mid-slide draws dark on c3', () => {
   const svg = renderBoard(midSlideGame());
   assert.match(svg, /Dark on c3/);
   assert.match(svg, /Slide from d3/);
+});
+
+test('a selected jump names the landing', () => {
+  const svg = renderBoard(playPoint(jumpGame(), 'c2'));
+  assert.match(svg, /Jump to c4/);
 });

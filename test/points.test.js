@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { POINTS, hasDiagonal, neighbours } from '../src/points.js';
+import { POINTS, beyond, hasDiagonal, neighbours } from '../src/points.js';
 
 test('the board has 25 points', () => {
   assert.equal(POINTS.length, 25);
@@ -20,4 +20,10 @@ test('every point has at least two neighbours', () => {
   for (const id of POINTS) {
     assert.ok(neighbours(id).length >= 2, id);
   }
+});
+
+test('the point beyond a neighbour continues the line', () => {
+  assert.equal(beyond('c2', 'c3'), 'c4');
+  assert.equal(beyond('a1', 'b2'), 'c3');
+  assert.equal(beyond('c2', 'c1'), null);
 });

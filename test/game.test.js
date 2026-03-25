@@ -42,7 +42,7 @@ test('a slide must follow a board line', () => {
   const selected = playPoint(midSlideGame(), 'e5');
   assert.throws(() => playPoint(selected, 'b3'), (err) => {
     assert.ok(err instanceof GameError);
-    assert.equal(err.errors[0], 'point: that point is not a neighbour');
+    assert.equal(err.errors[0], 'point: that is not a jump');
     return true;
   });
 });

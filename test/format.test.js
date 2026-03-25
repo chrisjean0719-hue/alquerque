@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { formatBoard, formatStatus } from '../src/format.js';
 import { createGame, playPoint } from '../src/game.js';
-import { midSlideGame } from '../src/sample.js';
+import { jumpGame, midSlideGame } from '../src/sample.js';
 
 test('an opening asks dark to slide', () => {
   assert.equal(formatStatus(createGame()), 'Dark to slide');
@@ -15,4 +15,10 @@ test('a selected piece names the from point', () => {
 
 test('the sample mid-slide asks light to slide', () => {
   assert.equal(formatStatus(midSlideGame()), 'Light to slide');
+});
+
+test('a take leaves eleven light pieces', () => {
+  const taken = playPoint(playPoint(jumpGame(), 'c2'), 'c4');
+  assert.equal(formatStatus(taken), 'Light to slide');
+  assert.match(formatBoard(taken), /light: 11 on the board/);
 });

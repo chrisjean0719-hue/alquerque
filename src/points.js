@@ -49,6 +49,27 @@ export function neighbours(id) {
   return NEIGHBOURS[id] ?? [];
 }
 
+export function beyond(fromId, overId) {
+  if (!neighbours(fromId).includes(overId)) return null;
+  const toFile = fileIndex(overId) + (fileIndex(overId) - fileIndex(fromId));
+  const toRank = rankIndex(overId) + (rankIndex(overId) - rankIndex(fromId));
+  if (toFile < 0 || toFile > 4 || toRank < 1 || toRank > 5) return null;
+  const toId = pointId(toFile, toRank);
+  if (!neighbours(overId).includes(toId)) return null;
+  return toId;
+}
+
+export function jumpedPoint(fromId, toId) {
+  const df = fileIndex(toId) - fileIndex(fromId);
+  const dr = rankIndex(toId) - rankIndex(fromId);
+  if (![0, 2, -2].includes(df) || ![0, 2, -2].includes(dr) || (df === 0 && dr === 0)) {
+    return null;
+  }
+  const overId = pointId(fileIndex(fromId) + df / 2, rankIndex(fromId) + dr / 2);
+  if (beyond(fromId, overId) !== toId) return null;
+  return overId;
+}
+
 export function hasDiagonal(id) {
   return (fileIndex(id) + (rankIndex(id) - 1)) % 2 === 0;
 }

@@ -1,5 +1,5 @@
-import { neighbours } from './points.js';
-import { LINES, POINTS, fileIndex, rankIndex } from './points.js';
+import { jumpLandings } from './board.js';
+import { LINES, POINTS, fileIndex, neighbours, rankIndex } from './points.js';
 import {
   BOARD_FILL,
   BOARD_SIZE,
@@ -55,6 +55,9 @@ function pointLabel(id, colour, game) {
   if (colour === game.turn) return `Slide from ${id}`;
   if (!colour && game.selected && neighbours(game.selected).includes(id)) {
     return `Slide to ${id}`;
+  }
+  if (!colour && game.selected && jumpLandings(game.points, game.selected).includes(id)) {
+    return `Jump to ${id}`;
   }
   if (colour === 'dark') return `Dark on ${id}`;
   if (colour === 'light') return `Light on ${id}`;

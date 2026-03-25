@@ -1,4 +1,4 @@
-import { POINTS, neighbours } from './points.js';
+import { POINTS, beyond, neighbours } from './points.js';
 import { PIECES } from './sizes.js';
 
 export function emptyPoints() {
@@ -35,6 +35,19 @@ export function hasLegalSlide(points, colour) {
   return POINTS.some(
     (from) => points[from] === colour && neighbours(from).some((to) => points[to] === null),
   );
+}
+
+export function jumpLandings(points, fromId) {
+  const colour = points[fromId];
+  if (!colour) return [];
+  const foe = colour === 'dark' ? 'light' : 'dark';
+  const lands = [];
+  for (const over of neighbours(fromId)) {
+    if (points[over] !== foe) continue;
+    const to = beyond(fromId, over);
+    if (to && points[to] === null) lands.push(to);
+  }
+  return lands;
 }
 
 export function isStartingArray(points) {

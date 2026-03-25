@@ -1,6 +1,7 @@
 import { occupant, startingPoints } from './board.js';
 import { GameError } from './error.js';
-import { validateSelect, validateSlide } from './validate.js';
+import { jumpedPoint, neighbours } from './points.js';
+import { validateJump, validateSelect, validateSlide } from './validate.js';
 
 export const DARK = 'dark';
 export const LIGHT = 'light';
@@ -41,7 +42,10 @@ export function playPoint(game, pointId) {
     }
     return selectPiece(game, pointId);
   }
-  return slidePiece(game, game.selected, pointId);
+  if (neighbours(game.selected).includes(pointId)) {
+    return slidePiece(game, game.selected, pointId);
+  }
+  return jumpPiece(game, game.selected, pointId);
 }
 
 export function selectPiece(game, pointId) {
@@ -61,6 +65,21 @@ export function slidePiece(game, fromId, toId) {
   }
   const next = cloneGame(game);
   next.points[fromId] = null;
+  next.points[toId] = game.turn;
+  next.selected = null;
+  next.turn = other(game.turn);
+  return next;
+}
+
+export function jumpPiece(game, fromId, toId) {
+  const errors = validateJump(game, fromId, toId);
+  if (errors.length > 0) {
+    throw new GameError(errors);
+  }
+  const overId = jumpedPoint(fromId, toId);
+  const next = cloneGame(game);
+  next.points[fromId] = null;
+  next.points[overId] = null;
   next.points[toId] = game.turn;
   next.selected = null;
   next.turn = other(game.turn);
