@@ -52,8 +52,14 @@ export function renderBoard(game) {
 }
 
 function pointLabel(id, colour, game) {
-  if (colour === game.turn) return `Slide from ${id}`;
-  if (!colour && game.selected && neighbours(game.selected).includes(id)) {
+  if (game.phase === 'jump') {
+    if (id === game.selected) return `Jump from ${id}`;
+    if (!colour && game.selected && jumpLandings(game.points, game.selected).includes(id)) {
+      return `Jump to ${id}`;
+    }
+  } else if (colour === game.turn) {
+    return `Slide from ${id}`;
+  } else if (!colour && game.selected && neighbours(game.selected).includes(id)) {
     return `Slide to ${id}`;
   }
   if (!colour && game.selected && jumpLandings(game.points, game.selected).includes(id)) {

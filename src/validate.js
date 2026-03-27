@@ -59,7 +59,7 @@ export function validateJump(game, fromId, toId) {
   if (game.winner || game.phase === 'over') {
     errors.push('phase: the game is over');
   }
-  if (game.phase !== 'slide') {
+  if (game.phase !== 'slide' && game.phase !== 'jump') {
     errors.push('phase: it is not time to jump');
   }
   if (!isPoint(fromId) || !isPoint(toId)) {

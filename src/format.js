@@ -6,6 +6,9 @@ export function formatStatus(game) {
     return `${who} wins.`;
   }
   const who = game.turn === 'dark' ? 'Dark' : 'Light';
+  if (game.phase === 'jump' && game.selected) {
+    return `${who} to jump from ${game.selected}`;
+  }
   if (game.selected) {
     return `${who} to slide from ${game.selected}`;
   }

@@ -1,4 +1,4 @@
-import { occupant, startingPoints } from './board.js';
+import { jumpLandings, occupant, startingPoints } from './board.js';
 import { GameError } from './error.js';
 import { jumpedPoint, neighbours } from './points.js';
 import { validateJump, validateSelect, validateSlide } from './validate.js';
@@ -34,6 +34,15 @@ export function other(colour) {
 export function playPoint(game, pointId) {
   if (game.winner || game.phase === 'over') {
     throw new GameError(['phase: the game is over']);
+  }
+  if (game.phase === 'jump') {
+    if (pointId === game.selected) {
+      return deselect(game);
+    }
+    if (occupant(game.points, pointId) === game.turn) {
+      throw new GameError(['phase: finish the jump']);
+    }
+    return jumpPiece(game, game.selected, pointId);
   }
   const occ = occupant(game.points, pointId);
   if (game.selected === null || occ === game.turn) {
@@ -81,7 +90,13 @@ export function jumpPiece(game, fromId, toId) {
   next.points[fromId] = null;
   next.points[overId] = null;
   next.points[toId] = game.turn;
+  if (jumpLandings(next.points, toId).length > 0) {
+    next.selected = toId;
+    next.phase = 'jump';
+    return next;
+  }
   next.selected = null;
+  next.phase = 'slide';
   next.turn = other(game.turn);
   return next;
 }
@@ -89,6 +104,10 @@ export function jumpPiece(game, fromId, toId) {
 function deselect(game) {
   const next = cloneGame(game);
   next.selected = null;
+  if (game.phase === 'jump') {
+    next.phase = 'slide';
+    next.turn = other(game.turn);
+  }
   return next;
 }
 

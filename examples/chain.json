@@ -1,0 +1,6 @@
+{
+  "turn": "dark",
+  "note": "Dark on c1 jumps c2 to c3, then c4 to c5. Fictional sample.",
+  "from": "c1",
+  "over": ["c2", "c4"]
+}

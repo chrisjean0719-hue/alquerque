@@ -16,12 +16,14 @@ test('a jump over a neighbour takes that piece', () => {
   assert.equal(occupiedCount(taken.points, 'light'), 11);
 });
 
-test('a jump hands the turn over even if another jump is open', () => {
+test('a jump keeps the turn when another take is open', () => {
   const taken = playPoint(playPoint(chainJumpGame(), 'c1'), 'c3');
   assert.equal(taken.points.c3, 'dark');
   assert.equal(taken.points.c2, null);
   assert.equal(taken.points.c4, 'light');
-  assert.equal(taken.turn, 'light');
+  assert.equal(taken.turn, 'dark');
+  assert.equal(taken.selected, 'c3');
+  assert.equal(taken.phase, 'jump');
 });
 
 test('a jump must land on the empty point beyond an opponent', () => {
