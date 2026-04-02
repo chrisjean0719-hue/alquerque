@@ -1,4 +1,4 @@
-import { occupiedCount } from './board.js';
+import { hasLegalJump, jumpLandings, occupiedCount } from './board.js';
 
 export function formatStatus(game) {
   if (game.winner) {
@@ -8,6 +8,12 @@ export function formatStatus(game) {
   const who = game.turn === 'dark' ? 'Dark' : 'Light';
   if (game.phase === 'jump' && game.selected) {
     return `${who} to jump from ${game.selected}`;
+  }
+  if (game.selected && jumpLandings(game.points, game.selected).length > 0) {
+    return `${who} to jump from ${game.selected}`;
+  }
+  if (hasLegalJump(game.points, game.turn)) {
+    return `${who} to jump`;
   }
   if (game.selected) {
     return `${who} to slide from ${game.selected}`;

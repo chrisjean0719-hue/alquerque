@@ -37,6 +37,10 @@ export function hasLegalSlide(points, colour) {
   );
 }
 
+export function hasLegalJump(points, colour) {
+  return POINTS.some((id) => points[id] === colour && jumpLandings(points, id).length > 0);
+}
+
 export function jumpLandings(points, fromId) {
   const colour = points[fromId];
   if (!colour) return [];

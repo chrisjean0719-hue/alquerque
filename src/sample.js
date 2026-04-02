@@ -26,3 +26,9 @@ export function chainJumpGame() {
     },
   });
 }
+
+export function forceGame() {
+  return fromPosition({
+    points: { c3: 'light', c4: null, b3: null },
+  });
+}

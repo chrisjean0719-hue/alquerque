@@ -19,7 +19,7 @@ test('a selected slide names the empty neighbour', () => {
 test('the mid-slide draws dark on c3', () => {
   const svg = renderBoard(midSlideGame());
   assert.match(svg, /Dark on c3/);
-  assert.match(svg, /Slide from d3/);
+  assert.match(svg, /Jump from d3/);
 });
 
 test('a selected jump names the landing', () => {

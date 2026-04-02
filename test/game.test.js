@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameError } from '../src/error.js';
-import { createGame, playPoint } from '../src/game.js';
+import { createGame, fromPosition, playPoint } from '../src/game.js';
 import { midSlideGame, sampleGame } from '../src/sample.js';
 
 test('dark slides first from the starting array', () => {
@@ -39,8 +39,8 @@ test('an occupied point rejects a slide', () => {
 });
 
 test('a slide must follow a board line', () => {
-  const selected = playPoint(midSlideGame(), 'e5');
-  assert.throws(() => playPoint(selected, 'b3'), (err) => {
+  const selected = playPoint(fromPosition({ points: { e5: null } }), 'a1');
+  assert.throws(() => playPoint(selected, 'e5'), (err) => {
     assert.ok(err instanceof GameError);
     assert.equal(err.errors[0], 'point: that is not a jump');
     return true;

@@ -13,14 +13,18 @@ test('a selected piece names the from point', () => {
   assert.equal(formatStatus(playPoint(createGame(), 'b3')), 'Dark to slide from b3');
 });
 
-test('the sample mid-slide asks light to slide', () => {
-  assert.equal(formatStatus(midSlideGame()), 'Light to slide');
+test('the sample mid-slide asks light to jump', () => {
+  assert.equal(formatStatus(midSlideGame()), 'Light to jump');
 });
 
 test('a take leaves eleven light pieces', () => {
   const taken = playPoint(playPoint(jumpGame(), 'c2'), 'c4');
-  assert.equal(formatStatus(taken), 'Light to slide');
   assert.match(formatBoard(taken), /light: 11 on the board/);
+});
+
+test('an open jump asks dark to jump', () => {
+  assert.equal(formatStatus(jumpGame()), 'Dark to jump');
+  assert.equal(formatStatus(playPoint(jumpGame(), 'c2')), 'Dark to jump from c2');
 });
 
 test('a chain asks dark to jump from the landing', () => {

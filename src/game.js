@@ -36,10 +36,7 @@ export function playPoint(game, pointId) {
     throw new GameError(['phase: the game is over']);
   }
   if (game.phase === 'jump') {
-    if (pointId === game.selected) {
-      return deselect(game);
-    }
-    if (occupant(game.points, pointId) === game.turn) {
+    if (pointId === game.selected || occupant(game.points, pointId) === game.turn) {
       throw new GameError(['phase: finish the jump']);
     }
     return jumpPiece(game, game.selected, pointId);

@@ -17,13 +17,15 @@ test('a second jump finishes the chain', () => {
   assert.equal(occupiedCount(done.points, 'light'), 10);
 });
 
-test('clicking the chaining piece ends the take', () => {
+test('clicking the chaining piece does not end the take', () => {
   const mid = playPoint(playPoint(chainJumpGame(), 'c1'), 'c3');
-  const stopped = playPoint(mid, 'c3');
-  assert.equal(stopped.turn, 'light');
-  assert.equal(stopped.phase, 'slide');
-  assert.equal(stopped.selected, null);
-  assert.equal(stopped.points.c4, 'light');
+  assert.throws(() => playPoint(mid, 'c3'), (err) => {
+    assert.ok(err instanceof GameError);
+    assert.equal(err.errors[0], 'phase: finish the jump');
+    return true;
+  });
+  assert.equal(mid.turn, 'dark');
+  assert.equal(mid.points.c4, 'light');
 });
 
 test('another piece cannot move during a chain', () => {

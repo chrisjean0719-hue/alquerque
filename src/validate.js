@@ -1,4 +1,4 @@
-import { occupant } from './board.js';
+import { hasLegalJump, jumpLandings, occupant } from './board.js';
 import { isPoint, jumpedPoint, neighbours } from './points.js';
 
 export function validateSelect(game, pointId) {
@@ -18,6 +18,10 @@ export function validateSelect(game, pointId) {
   }
   if (occupant(game.points, pointId) !== game.turn) {
     errors.push('point: choose your piece');
+    return errors;
+  }
+  if (hasLegalJump(game.points, game.turn) && jumpLandings(game.points, pointId).length === 0) {
+    errors.push('point: choose a piece that can jump');
   }
   return errors;
 }
@@ -32,6 +36,9 @@ export function validateSlide(game, fromId, toId) {
   }
   if (game.phase !== 'slide') {
     errors.push('phase: it is not time to slide');
+  }
+  if (hasLegalJump(game.points, game.turn)) {
+    errors.push('phase: jump if you can');
   }
   if (!isPoint(fromId) || !isPoint(toId)) {
     errors.push('point: point must be a board point');

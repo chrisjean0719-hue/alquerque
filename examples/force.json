@@ -1,0 +1,6 @@
+{
+  "turn": "dark",
+  "note": "Dark must jump c2 over c3 to c4; sliding b2 to b3 is refused. Fictional sample.",
+  "jump": "c2-c4",
+  "empty": ["c4", "b3"]
+}
