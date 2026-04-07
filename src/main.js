@@ -2,7 +2,7 @@ import { formatStatus } from './format.js';
 import { createGame, playPoint } from './game.js';
 import { GameError } from './error.js';
 import { renderBoard } from './render.js';
-import { chainJumpGame, forceGame, jumpGame, midSlideGame } from './sample.js';
+import { chainJumpGame, forceGame, jumpGame, midSlideGame, winGame } from './sample.js';
 
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');
@@ -16,6 +16,7 @@ function startGame() {
   if (fixture === 'jump') return jumpGame();
   if (fixture === 'chain') return chainJumpGame();
   if (fixture === 'force') return forceGame();
+  if (fixture === 'win') return winGame();
   return createGame();
 }
 

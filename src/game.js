@@ -1,4 +1,4 @@
-import { jumpLandings, occupant, startingPoints } from './board.js';
+import { hasLegalMove, jumpLandings, occupant, occupiedCount, startingPoints } from './board.js';
 import { GameError } from './error.js';
 import { jumpedPoint, neighbours } from './points.js';
 import { validateJump, validateSelect, validateSlide } from './validate.js';
@@ -18,13 +18,13 @@ export function createGame() {
 
 export function fromPosition(partial) {
   const base = createGame();
-  return {
+  return settle({
     ...base,
     ...partial,
     points: { ...base.points, ...(partial.points ?? {}) },
     selected: partial.selected ?? null,
     winner: partial.winner ?? null,
-  };
+  });
 }
 
 export function other(colour) {
@@ -74,7 +74,7 @@ export function slidePiece(game, fromId, toId) {
   next.points[toId] = game.turn;
   next.selected = null;
   next.turn = other(game.turn);
-  return next;
+  return settle(next);
 }
 
 export function jumpPiece(game, fromId, toId) {
@@ -90,11 +90,36 @@ export function jumpPiece(game, fromId, toId) {
   if (jumpLandings(next.points, toId).length > 0) {
     next.selected = toId;
     next.phase = 'jump';
-    return next;
+    return settle(next);
   }
   next.selected = null;
   next.phase = 'slide';
   next.turn = other(game.turn);
+  return settle(next);
+}
+
+function settle(game) {
+  const next = cloneGame(game);
+  if (occupiedCount(next.points, DARK) === 0) {
+    next.winner = LIGHT;
+    next.phase = 'over';
+    next.selected = null;
+    return next;
+  }
+  if (occupiedCount(next.points, LIGHT) === 0) {
+    next.winner = DARK;
+    next.phase = 'over';
+    next.selected = null;
+    return next;
+  }
+  if (next.winner || next.phase === 'over' || next.phase === 'jump') {
+    return next;
+  }
+  if (!hasLegalMove(next.points, next.turn)) {
+    next.winner = other(next.turn);
+    next.phase = 'over';
+    next.selected = null;
+  }
   return next;
 }
 

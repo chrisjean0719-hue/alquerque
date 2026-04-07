@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { formatBoard, formatStatus } from '../src/format.js';
 import { createGame, playPoint } from '../src/game.js';
-import { chainJumpGame, jumpGame, midSlideGame } from '../src/sample.js';
+import { blockedGame, chainJumpGame, jumpGame, midSlideGame, winGame } from '../src/sample.js';
 
 test('an opening asks dark to slide', () => {
   assert.equal(formatStatus(createGame()), 'Dark to slide');
@@ -30,4 +30,12 @@ test('an open jump asks dark to jump', () => {
 test('a chain asks dark to jump from the landing', () => {
   const mid = playPoint(playPoint(chainJumpGame(), 'c1'), 'c3');
   assert.equal(formatStatus(mid), 'Dark to jump from c3');
+});
+
+test('taking the last piece reports that dark wins', () => {
+  assert.equal(formatStatus(playPoint(playPoint(winGame(), 'c2'), 'c4')), 'Dark wins.');
+});
+
+test('a blocked slide reports that light wins', () => {
+  assert.equal(formatStatus(blockedGame()), 'Light wins.');
 });

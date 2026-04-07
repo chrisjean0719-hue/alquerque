@@ -52,6 +52,11 @@ export function renderBoard(game) {
 }
 
 function pointLabel(id, colour, game) {
+  if (game.winner || game.phase === 'over') {
+    if (colour === 'dark') return `Dark on ${id}`;
+    if (colour === 'light') return `Light on ${id}`;
+    return `Empty ${id}`;
+  }
   const mustJump = game.phase === 'jump' || hasLegalJump(game.points, game.turn);
   if (mustJump) {
     if (colour === game.turn && jumpLandings(game.points, id).length > 0) {

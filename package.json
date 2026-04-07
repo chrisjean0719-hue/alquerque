@@ -1,8 +1,8 @@
 {
   "name": "alquerque",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
-  "description": "Slide, jump, chain, and take when you can at alquerque",
+  "description": "Slide, jump, chain, force a take, and win at alquerque",
   "type": "module",
   "scripts": {
     "start": "node bin/serve.js",

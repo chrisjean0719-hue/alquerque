@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createGame, playPoint } from '../src/game.js';
 import { renderBoard } from '../src/render.js';
-import { chainJumpGame, jumpGame, midSlideGame } from '../src/sample.js';
+import { chainJumpGame, jumpGame, midSlideGame, winGame } from '../src/sample.js';
 
 test('the starting board draws 25 points', () => {
   const svg = renderBoard(createGame());
@@ -31,4 +31,11 @@ test('a chain names the next landing', () => {
   const svg = renderBoard(playPoint(playPoint(chainJumpGame(), 'c1'), 'c3'));
   assert.match(svg, /Jump from c3/);
   assert.match(svg, /Jump to c5/);
+});
+
+test('a finished board does not offer a jump', () => {
+  const svg = renderBoard(playPoint(playPoint(winGame(), 'c2'), 'c4'));
+  assert.match(svg, /Dark on c4/);
+  assert.doesNotMatch(svg, /Jump from/);
+  assert.doesNotMatch(svg, /Slide from/);
 });

@@ -1,0 +1,6 @@
+{
+  "turn": "dark",
+  "note": "Dark on c2 jumps the last Light on c3 and wins. Fictional sample.",
+  "dark": ["c2"],
+  "light": ["c3"]
+}
