@@ -50,6 +50,10 @@ h1 {
   cursor: pointer;
 }
 
+#board .hint {
+  cursor: pointer;
+}
+
 .actions {
   display: flex;
   gap: 8px;

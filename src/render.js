@@ -1,9 +1,12 @@
-import { hasLegalJump, jumpLandings } from './board.js';
-import { LINES, POINTS, fileIndex, neighbours, rankIndex } from './points.js';
+import { hasLegalJump } from './board.js';
+import { legalPoints } from './hints.js';
+import { LINES, POINTS, fileIndex, rankIndex } from './points.js';
 import {
   BOARD_FILL,
   BOARD_SIZE,
   DARK_FILL,
+  HINT_FILL,
+  HINT_STROKE,
   HIT_R,
   LABEL_FILL,
   LIGHT_FILL,
@@ -25,6 +28,7 @@ export function pointXY(id) {
 }
 
 export function renderBoard(game) {
+  const hints = new Set(legalPoints(game));
   const lines = LINES.map(([a, b]) => {
     const from = pointXY(a);
     const to = pointXY(b);
@@ -34,10 +38,14 @@ export function renderBoard(game) {
   const points = POINTS.map((id) => {
     const { x, y } = pointXY(id);
     const colour = game.points[id];
-    const piece = colour ? pieceMarkup(x, y, colour, game.selected === id) : '';
-    return `<g data-point="${id}" role="button" tabindex="0" aria-label="${pointLabel(id, colour, game)}">
+    const hinted = hints.has(id);
+    const piece = colour ? pieceMarkup(x, y, colour, game.selected === id, hinted) : '';
+    const fill = hinted && !colour ? HINT_FILL : POINT_FILL;
+    const stroke = hinted ? HINT_STROKE : LINE_STROKE;
+    const hintAttr = hinted ? ' data-hint="true"' : '';
+    return `<g data-point="${id}"${hintAttr} role="button" tabindex="0" aria-label="${pointLabel(id, colour, game, hints)}">
       <circle class="hit" cx="${x}" cy="${y}" r="${HIT_R}" fill="transparent" />
-      <circle class="spot" cx="${x}" cy="${y}" r="${POINT_R}" fill="${POINT_FILL}" stroke="${LINE_STROKE}" stroke-width="2" />
+      <circle class="spot${hinted ? ' hint' : ''}" cx="${x}" cy="${y}" r="${POINT_R}" fill="${fill}" stroke="${stroke}" stroke-width="${hinted ? 3 : 2}" />
       ${piece}
     </g>`;
   }).join('');
@@ -51,39 +59,30 @@ export function renderBoard(game) {
   </svg>`;
 }
 
-function pointLabel(id, colour, game) {
+function pointLabel(id, colour, game, hints) {
   if (game.winner || game.phase === 'over') {
     if (colour === 'dark') return `Dark on ${id}`;
     if (colour === 'light') return `Light on ${id}`;
     return `Empty ${id}`;
   }
-  const mustJump = game.phase === 'jump' || hasLegalJump(game.points, game.turn);
-  if (mustJump) {
-    if (colour === game.turn && jumpLandings(game.points, id).length > 0) {
-      return `Jump from ${id}`;
-    }
-    if (!colour && game.selected && jumpLandings(game.points, game.selected).includes(id)) {
-      return `Jump to ${id}`;
-    }
-  } else {
-    if (colour === game.turn) return `Slide from ${id}`;
-    if (!colour && game.selected && neighbours(game.selected).includes(id)) {
-      return `Slide to ${id}`;
-    }
+  const verb = game.phase === 'jump' || hasLegalJump(game.points, game.turn) ? 'Jump' : 'Slide';
+  if (colour === game.turn && (hints.has(id) || game.selected === id)) {
+    return `${verb} from ${id}`;
   }
+  if (!colour && hints.has(id)) return `${verb} to ${id}`;
   if (colour === 'dark') return `Dark on ${id}`;
   if (colour === 'light') return `Light on ${id}`;
   return `Empty ${id}`;
 }
 
-function pieceMarkup(x, y, colour, selected) {
-  const klass = `piece${selected ? ' selected' : ''}`;
+function pieceMarkup(x, y, colour, selected, hinted) {
+  const stroke = selected ? SELECT_STROKE : hinted ? HINT_STROKE : colour === 'light' ? LIGHT_STROKE : null;
+  const width = selected ? 4 : hinted ? 3 : 2;
+  const klass = `piece${selected ? ' selected' : ''}${hinted ? ' hint' : ''}`;
   if (colour === 'dark') {
-    const extra = selected ? ` stroke="${SELECT_STROKE}" stroke-width="4"` : '';
+    const extra = stroke ? ` stroke="${stroke}" stroke-width="${width}"` : '';
     return `<circle class="${klass}" cx="${x}" cy="${y}" r="${PIECE_R}" fill="${DARK_FILL}"${extra} />`;
   }
-  const stroke = selected ? SELECT_STROKE : LIGHT_STROKE;
-  const width = selected ? 4 : 2;
   return `<circle class="${klass}" cx="${x}" cy="${y}" r="${PIECE_R}" fill="${LIGHT_FILL}" stroke="${stroke}" stroke-width="${width}" />`;
 }
 

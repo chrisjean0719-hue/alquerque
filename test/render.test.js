@@ -9,6 +9,8 @@ test('the starting board draws 25 points', () => {
   assert.equal([...svg.matchAll(/data-point="/g)].length, 25);
   assert.match(svg, /Slide from b3/);
   assert.match(svg, /Empty c3/);
+  assert.match(svg, /data-hint="true"/);
+  assert.match(svg, /Dark on a1/);
 });
 
 test('a selected slide names the empty neighbour', () => {
