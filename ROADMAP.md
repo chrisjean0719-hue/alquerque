@@ -1,6 +1,6 @@
 # Roadmap
 
-Alquerque is a 5×5 slide game in the browser. Two players start with twelve pieces each, the centre empty, Dark slides first to an empty neighbour, a jump over an opponent takes that piece, a landing that can take again keeps the turn, a jump that is open must be taken, a colour that cannot keep playing loses, and legal points are marked. About 35 hours remain.
+Alquerque is a 5×5 slide game in the browser. Two players start with twelve pieces each, the centre empty, Dark slides first to an empty neighbour, a jump over an opponent takes that piece, a landing that can take again keeps the turn, a jump that is open must be taken, a colour that cannot keep playing loses, legal points are marked, and a ply can be undone. About 35 hours remain.
 
 ## Later work
 
@@ -50,4 +50,4 @@ Move a cursor between points with the arrows and slide with Enter.
 
 Drag a piece to an empty neighbour.
 
-An opening book is the next piece. The game can slide, take by a jump, chain takes, force a take, win, and hint, and it does not yet suggest an opening reply.
+An opening book is the next piece. The game can slide, take by a jump, chain takes, force a take, win, hint, and undo, and it does not yet suggest an opening reply.

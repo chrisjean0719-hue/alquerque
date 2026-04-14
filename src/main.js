@@ -1,11 +1,12 @@
 import { formatStatus } from './format.js';
-import { createGame, playPoint } from './game.js';
+import { canUndo, createGame, playPoint, undo } from './game.js';
 import { GameError } from './error.js';
 import { renderBoard } from './render.js';
 import { chainJumpGame, forceGame, jumpGame, midSlideGame, winGame } from './sample.js';
 
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');
+const undoEl = document.querySelector('#undo');
 const newGameEl = document.querySelector('#new-game');
 
 let game = startGame();
@@ -23,6 +24,7 @@ function startGame() {
 function paint() {
   boardEl.innerHTML = renderBoard(game);
   statusEl.textContent = formatStatus(game);
+  undoEl.disabled = !canUndo(game);
 }
 
 boardEl.addEventListener('click', (event) => {
@@ -30,6 +32,19 @@ boardEl.addEventListener('click', (event) => {
   if (!hit) return;
   try {
     game = playPoint(game, hit.getAttribute('data-point'));
+    paint();
+  } catch (err) {
+    if (err instanceof GameError) {
+      statusEl.textContent = err.errors[0].replace(/^[a-z]+: /, '');
+      return;
+    }
+    throw err;
+  }
+});
+
+undoEl.addEventListener('click', () => {
+  try {
+    game = undo(game);
     paint();
   } catch (err) {
     if (err instanceof GameError) {

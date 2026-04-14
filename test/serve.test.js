@@ -13,6 +13,7 @@ test('the server returns the board page', async (t) => {
   assert.match(body, /Alquerque/);
   assert.match(body, /src\/main.js/);
   assert.match(body, /New game/);
+  assert.match(body, /Undo/);
 });
 
 test('the server rejects a path outside the project', async (t) => {

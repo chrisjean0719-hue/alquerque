@@ -13,6 +13,7 @@ export function createGame() {
     points: startingPoints(),
     selected: null,
     winner: null,
+    past: [],
   };
 }
 
@@ -24,6 +25,7 @@ export function fromPosition(partial) {
     points: { ...base.points, ...(partial.points ?? {}) },
     selected: partial.selected ?? null,
     winner: partial.winner ?? null,
+    past: partial.past ?? [],
   });
 }
 
@@ -61,7 +63,7 @@ export function selectPiece(game, pointId) {
   }
   const next = cloneGame(game);
   next.selected = pointId;
-  return next;
+  return remember(game, next);
 }
 
 export function slidePiece(game, fromId, toId) {
@@ -74,7 +76,7 @@ export function slidePiece(game, fromId, toId) {
   next.points[toId] = game.turn;
   next.selected = null;
   next.turn = other(game.turn);
-  return settle(next);
+  return remember(game, settle(next));
 }
 
 export function jumpPiece(game, fromId, toId) {
@@ -90,12 +92,12 @@ export function jumpPiece(game, fromId, toId) {
   if (jumpLandings(next.points, toId).length > 0) {
     next.selected = toId;
     next.phase = 'jump';
-    return settle(next);
+    return remember(game, settle(next));
   }
   next.selected = null;
   next.phase = 'slide';
   next.turn = other(game.turn);
-  return settle(next);
+  return remember(game, settle(next));
 }
 
 function settle(game) {
@@ -130,7 +132,40 @@ function deselect(game) {
     next.phase = 'slide';
     next.turn = other(game.turn);
   }
-  return next;
+  return remember(game, next);
+}
+
+export function canUndo(game) {
+  return (game.past ?? []).length > 0;
+}
+
+export function undo(game) {
+  const past = game.past ?? [];
+  if (past.length === 0) {
+    throw new GameError(['past: no ply to undo']);
+  }
+  const prev = past[past.length - 1];
+  return {
+    ...cloneGame(prev),
+    past: past.slice(0, -1),
+  };
+}
+
+function snapshot(game) {
+  return {
+    turn: game.turn,
+    phase: game.phase,
+    points: { ...game.points },
+    selected: game.selected ?? null,
+    winner: game.winner ?? null,
+    past: [],
+  };
+}
+
+function remember(previous, next) {
+  const out = cloneGame(next);
+  out.past = [...(previous.past ?? []), snapshot(previous)];
+  return out;
 }
 
 export function cloneGame(game) {
@@ -140,5 +175,6 @@ export function cloneGame(game) {
     points: { ...game.points },
     selected: game.selected ?? null,
     winner: game.winner ?? null,
+    past: game.past ?? [],
   };
 }
