@@ -1,6 +1,6 @@
 import { hasLegalMove, jumpLandings, occupant, occupiedCount, startingPoints } from './board.js';
 import { GameError } from './error.js';
-import { copyPlies, plyNotation } from './moves.js';
+import { copyPlies, copyPosition, plyNotation } from './moves.js';
 import { jumpedPoint, neighbours } from './points.js';
 import { validateJump, validateSelect, validateSlide } from './validate.js';
 
@@ -8,7 +8,7 @@ export const DARK = 'dark';
 export const LIGHT = 'light';
 
 export function createGame() {
-  return {
+  const game = {
     turn: DARK,
     phase: 'slide',
     points: startingPoints(),
@@ -16,12 +16,15 @@ export function createGame() {
     winner: null,
     past: [],
     plies: [],
+    origin: null,
   };
+  game.origin = originOf(game);
+  return game;
 }
 
 export function fromPosition(partial) {
   const base = createGame();
-  return settle({
+  const game = {
     ...base,
     ...partial,
     points: { ...base.points, ...(partial.points ?? {}) },
@@ -29,7 +32,11 @@ export function fromPosition(partial) {
     winner: partial.winner ?? null,
     past: partial.past ?? [],
     plies: copyPlies(partial.plies ?? []),
-  });
+    origin: partial.origin ? copyPosition(partial.origin) : null,
+  };
+  const settled = settle(game);
+  settled.origin = partial.origin ? copyPosition(partial.origin) : originOf(settled);
+  return settled;
 }
 
 export function other(colour) {
@@ -80,7 +87,7 @@ export function slidePiece(game, fromId, toId) {
   next.selected = null;
   const withPly = pushPly(next, 'slide', [fromId, toId]);
   withPly.turn = other(game.turn);
-  return remember(game, settle(withPly));
+  return remember(game, stampAfter(settle(withPly)));
 }
 
 export function jumpPiece(game, fromId, toId) {
@@ -98,12 +105,12 @@ export function jumpPiece(game, fromId, toId) {
   if (jumpLandings(withPly.points, toId).length > 0) {
     withPly.selected = toId;
     withPly.phase = 'jump';
-    return remember(game, settle(withPly));
+    return remember(game, stampAfter(settle(withPly)));
   }
   withPly.selected = null;
   withPly.phase = 'slide';
   withPly.turn = other(game.turn);
-  return remember(game, settle(withPly));
+  return remember(game, stampAfter(settle(withPly)));
 }
 
 function settle(game) {
@@ -153,6 +160,7 @@ export function undo(game) {
   const prev = past[past.length - 1];
   return {
     ...cloneGame(prev),
+    origin: copyPosition(game.origin),
     past: past.slice(0, -1),
   };
 }
@@ -167,6 +175,25 @@ function snapshot(game) {
     past: [],
     plies: copyPlies(game.plies),
   };
+}
+
+function originOf(game) {
+  return copyPosition({
+    turn: game.turn,
+    phase: game.phase,
+    points: game.points,
+    selected: game.selected ?? null,
+    winner: game.winner ?? null,
+  });
+}
+
+function stampAfter(game) {
+  const plies = game.plies ?? [];
+  if (plies.length === 0) return game;
+  const next = cloneGame(game);
+  const last = next.plies[next.plies.length - 1];
+  next.plies = [...next.plies.slice(0, -1), { ...last, after: originOf(next) }];
+  return next;
 }
 
 function pushPly(game, kind, clicks) {
@@ -215,5 +242,6 @@ export function cloneGame(game) {
     winner: game.winner ?? null,
     past: game.past ?? [],
     plies: copyPlies(game.plies),
+    origin: copyPosition(game.origin),
   };
 }

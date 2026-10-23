@@ -15,6 +15,8 @@ test('the server returns the board page', async (t) => {
   assert.match(body, /New game/);
   assert.match(body, /Undo/);
   assert.match(body, /Moves/);
+  assert.match(body, /Replay/);
+  assert.match(body, /Next/);
 });
 
 test('the server rejects a path outside the project', async (t) => {

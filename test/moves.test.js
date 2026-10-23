@@ -57,10 +57,15 @@ test('selecting a piece is not a ply', () => {
 });
 
 test('the page lists paired plies', () => {
-  const html = renderMoveList([
-    { colour: 'dark', kind: 'slide', notation: 'b3-c3', clicks: ['b3', 'c3'] },
-    { colour: 'light', kind: 'jump', notation: 'd3xb3', clicks: ['d3', 'b3'] },
-  ]);
+  const html = renderMoveList(
+    [
+      { colour: 'dark', kind: 'slide', notation: 'b3-c3', clicks: ['b3', 'c3'] },
+      { colour: 'light', kind: 'jump', notation: 'd3xb3', clicks: ['d3', 'b3'] },
+    ],
+    1,
+  );
   assert.match(html, /1\. b3-c3/);
   assert.match(html, /d3xb3/);
+  assert.match(html, /data-ply="1"/);
+  assert.match(html, /aria-current="step"/);
 });

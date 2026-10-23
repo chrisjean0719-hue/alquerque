@@ -11,7 +11,19 @@ export function copyPlies(plies) {
     kind: ply.kind,
     notation: ply.notation,
     clicks: [...(ply.clicks ?? [])],
+    after: ply.after ? copyPosition(ply.after) : null,
   }));
+}
+
+export function copyPosition(position) {
+  if (!position) return null;
+  return {
+    turn: position.turn,
+    phase: position.phase,
+    points: { ...position.points },
+    selected: position.selected ?? null,
+    winner: position.winner ?? null,
+  };
 }
 
 export function formatMoveList(plies) {
@@ -25,16 +37,23 @@ export function formatMoveList(plies) {
   return rows.join('\n');
 }
 
-export function renderMoveList(plies) {
+export function renderMoveList(plies, cursor) {
   if (!plies.length) {
     return '<ol class="moves"></ol>';
   }
   const items = [];
   for (let i = 0; i < plies.length; i += 2) {
     const n = i / 2 + 1;
-    const dark = `<span>${n}. ${plies[i].notation}</span>`;
-    const light = plies[i + 1] ? `<span>${plies[i + 1].notation}</span>` : '';
+    const dark = plyButton(plies[i], i + 1, `${n}. ${plies[i].notation}`, cursor);
+    const light = plies[i + 1]
+      ? plyButton(plies[i + 1], i + 2, plies[i + 1].notation, cursor)
+      : '';
     items.push(`<li>${dark}${light}</li>`);
   }
   return `<ol class="moves">${items.join('')}</ol>`;
+}
+
+function plyButton(ply, index, label, cursor) {
+  const current = index === cursor ? ' aria-current="step"' : '';
+  return `<button type="button" data-ply="${index}" aria-label="${ply.colour} ${ply.notation}"${current}>${label}</button>`;
 }
