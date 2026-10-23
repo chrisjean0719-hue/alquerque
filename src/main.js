@@ -1,12 +1,14 @@
 import { formatStatus } from './format.js';
 import { canUndo, createGame, playPoint } from './game.js';
 import { GameError } from './error.js';
+import { renderMoveList } from './moves.js';
 import { playOpponent, undoHuman } from './opponent.js';
 import { renderBoard } from './render.js';
 import { chainJumpGame, forceGame, jumpGame, midSlideGame, winGame } from './sample.js';
 
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');
+const movesEl = document.querySelector('#moves');
 const undoEl = document.querySelector('#undo');
 const newGameEl = document.querySelector('#new-game');
 
@@ -25,6 +27,7 @@ function startGame() {
 function paint() {
   boardEl.innerHTML = renderBoard(game);
   statusEl.textContent = formatStatus(game);
+  movesEl.innerHTML = renderMoveList(game.plies ?? []);
   undoEl.disabled = !canUndo(game);
 }
 

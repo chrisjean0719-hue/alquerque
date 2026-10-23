@@ -1,8 +1,8 @@
 {
   "name": "alquerque",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
-  "description": "Slide, jump, chain, force a take, win, hint, undo, and play Light at alquerque",
+  "description": "Slide, jump, chain, force a take, win, hint, undo, play Light, and list plies at alquerque",
   "type": "module",
   "scripts": {
     "start": "node bin/serve.js",

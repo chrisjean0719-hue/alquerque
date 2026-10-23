@@ -1,5 +1,6 @@
 import { hasLegalMove, jumpLandings, occupant, occupiedCount, startingPoints } from './board.js';
 import { GameError } from './error.js';
+import { copyPlies, plyNotation } from './moves.js';
 import { jumpedPoint, neighbours } from './points.js';
 import { validateJump, validateSelect, validateSlide } from './validate.js';
 
@@ -14,6 +15,7 @@ export function createGame() {
     selected: null,
     winner: null,
     past: [],
+    plies: [],
   };
 }
 
@@ -26,6 +28,7 @@ export function fromPosition(partial) {
     selected: partial.selected ?? null,
     winner: partial.winner ?? null,
     past: partial.past ?? [],
+    plies: copyPlies(partial.plies ?? []),
   });
 }
 
@@ -75,8 +78,9 @@ export function slidePiece(game, fromId, toId) {
   next.points[fromId] = null;
   next.points[toId] = game.turn;
   next.selected = null;
-  next.turn = other(game.turn);
-  return remember(game, settle(next));
+  const withPly = pushPly(next, 'slide', [fromId, toId]);
+  withPly.turn = other(game.turn);
+  return remember(game, settle(withPly));
 }
 
 export function jumpPiece(game, fromId, toId) {
@@ -89,15 +93,17 @@ export function jumpPiece(game, fromId, toId) {
   next.points[fromId] = null;
   next.points[overId] = null;
   next.points[toId] = game.turn;
-  if (jumpLandings(next.points, toId).length > 0) {
-    next.selected = toId;
-    next.phase = 'jump';
-    return remember(game, settle(next));
+  const withPly =
+    game.phase === 'jump' ? amendPly(next, toId) : pushPly(next, 'jump', [fromId, toId]);
+  if (jumpLandings(withPly.points, toId).length > 0) {
+    withPly.selected = toId;
+    withPly.phase = 'jump';
+    return remember(game, settle(withPly));
   }
-  next.selected = null;
-  next.phase = 'slide';
-  next.turn = other(game.turn);
-  return remember(game, settle(next));
+  withPly.selected = null;
+  withPly.phase = 'slide';
+  withPly.turn = other(game.turn);
+  return remember(game, settle(withPly));
 }
 
 function settle(game) {
@@ -159,7 +165,39 @@ function snapshot(game) {
     selected: game.selected ?? null,
     winner: game.winner ?? null,
     past: [],
+    plies: copyPlies(game.plies),
   };
+}
+
+function pushPly(game, kind, clicks) {
+  const next = cloneGame(game);
+  next.plies = [
+    ...(game.plies ?? []),
+    {
+      colour: game.turn,
+      kind,
+      clicks: [...clicks],
+      notation: plyNotation(kind, clicks),
+    },
+  ];
+  return next;
+}
+
+function amendPly(game, pointId) {
+  const plies = game.plies ?? [];
+  const last = plies[plies.length - 1];
+  if (!last) return game;
+  const clicks = [...last.clicks, pointId];
+  const next = cloneGame(game);
+  next.plies = [
+    ...plies.slice(0, -1),
+    {
+      ...last,
+      clicks,
+      notation: plyNotation(last.kind, clicks),
+    },
+  ];
+  return next;
 }
 
 function remember(previous, next) {
@@ -176,5 +214,6 @@ export function cloneGame(game) {
     selected: game.selected ?? null,
     winner: game.winner ?? null,
     past: game.past ?? [],
+    plies: copyPlies(game.plies),
   };
 }
